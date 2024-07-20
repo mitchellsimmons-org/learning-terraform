@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
 # Prevent pushing to the main branch
 PROTECTED_BRANCH='main'
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+CURRENT_BRANCH=$(git branch --show-current)
 
 if [ "$CURRENT_BRANCH" = "$PROTECTED_BRANCH" ]; then
   echo "You are not allowed to push to the $PROTECTED_BRANCH branch."
   exit 1
 fi
 
-exit 0
+# Check for leaks
+gitleaks protect --verbose --staged
