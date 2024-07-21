@@ -51,14 +51,14 @@ jobs:
           role-skip-session-tagging: true
 
       - name: Terraform Init
-        run: >
+        run: >-
           terraform init
-            -input=false
-            -backend-config="region=${{ env.AWS_REGION }}"
-            -backend-config="bucket=github-learning-terraform-state"
-            -backend-config="key=state/create-ec2/${{ env.ENVIRONMENT }}-terraform.tfstate"
-            -backend-config="dynamodb_table=github-learning-terraform-state"
-            -backend-config="encrypt=true"
+          -input=false
+          -backend-config="region=${{ env.AWS_REGION }}"
+          -backend-config="bucket=github-learning-terraform-state"
+          -backend-config="key=state/create-ec2/${{ env.ENVIRONMENT }}-terraform.tfstate"
+          -backend-config="dynamodb_table=github-learning-terraform-state"
+          -backend-config="encrypt=true"
 
       - name: Terraform format
         id: fmt
