@@ -35,6 +35,7 @@ jobs:
     env:
       AWS_REGION: ap-southeast-2
       PLAN_FILE: plan.tfplan
+      GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
 
     steps:
       - name: Checkout code
@@ -74,8 +75,6 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: >-
           terraform plan
           -input=false
