@@ -2,6 +2,8 @@ name: Create EC2 Instance Workflow
 
 on:
   push:
+    branches:
+      - main
     paths:
       - "create-ec2/**"
       - .github/workflows/create-ec2.yml
@@ -14,6 +16,7 @@ on:
       - main
     paths:
       - create-ec2/**
+      - .github/workflows/create-ec2.yml
   workflow_dispatch:
 
 permissions:
@@ -52,6 +55,7 @@ jobs:
           role-skip-session-tagging: true
 
       - name: Terraform Init
+        id: init
         run: >-
           terraform init
           -input=false
@@ -71,18 +75,24 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -input=false -out=${{ env.PLAN_FILE}}
+        run: >-
+          terraform plan
+          -input=false
+          -out=${{ env.PLAN_FILE}}
+          -no-color
+          2>&1
 
-      - uses: actions/github-script@v7
+      - name: Comment on PR
+        uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
           script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            const output = `#### Terraform Format Check: \`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization: \`${{ steps.init.outcome }}\`
+            #### Terraform Validation: \`${{ steps.validate.outcome }}\`
+            #### Terraform Plan: \`${{ steps.plan.outcome }}\`
 
             <details><summary>Show Plan</summary>
 
@@ -91,7 +101,9 @@ jobs:
             \`\`\`
 
             </details>
-            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            Pushed by: @${{ github.actor }}
+
+            Action: \`${{ github.event_name }}\`*`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
