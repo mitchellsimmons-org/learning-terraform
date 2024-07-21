@@ -7,6 +7,4 @@ terraform {
   }
 }
 
-provider "github" {
-  token = var.token
-}
+provider "github" {}
