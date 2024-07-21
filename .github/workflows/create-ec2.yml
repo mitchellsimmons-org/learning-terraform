@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "create-ec2/**"
+      - .github/workflows/create-ec2.yml
   pull_request:
     types:
       - opened
